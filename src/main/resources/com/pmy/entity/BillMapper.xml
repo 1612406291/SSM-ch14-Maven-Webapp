@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+  
+<mapper namespace="com.pmy.dao.BillMapping">  
+<!--按条件分页查询订单  -->
+<select id="getBillList" resultType="Bill">
+	SELECT b.*,p.`proName`
+	 FROM `smbms_bill` b INNER JOIN `smbms_provider` p ON b.`providerId` = p.`id`
+	 <trim prefix="where" prefixOverrides="and|or">
+	 		<if test="productName != null and productName!= ''">and `productName` LIKE CONCAT ('%',#{productName},'%')</if>
+	 		<if test="providerId != null and providerId !=0">AND `providerId` = #{providerId}</if>
+	 		<if test="isPayment != null and isPayment !=0">AND `isPayment` =#{isPayment}</if>
+	 </trim>
+	limit #{pageIndex},#{pageSize}
+</select>
+<!-- 查看所有的供应商名称 -->
+<select id="getAllProvider"  resultType="Provider">
+	SELECT * FROM `smbms_provider`
+</select>
+
+<!-- 根据商品名称，供应商，是否付款查询返回的个数 -->
+<select id="getProviderRows" resultType="int">
+	SELECT count(*)
+	 FROM `smbms_bill` b INNER JOIN `smbms_provider` p ON b.`providerId` = p.`id`
+	 <trim prefix="where" prefixOverrides="and|or">
+	 		<if test="productName != null and productName!= ''">and `productName` LIKE CONCAT ('%',#{productName},'%')</if>
+	 		<if test="providerId != null and providerId !=0">AND `providerId` = #{providerId}</if>
+	 		<if test="isPayment != null and isPayment !=0">AND `isPayment` =#{isPayment}</if>
+	 </trim>
+</select>
+
+<!-- 根据ID删除订单 -->
+<delete id="delBill" parameterType="int" >
+	DELETE FROM `smbms_bill` WHERE `id` = #{id}
+</delete>
+
+<!-- 新增订单 -->
+<insert id="addBill" parameterType="Bill">
+	INSERT INTO smbms_bill(
+	<trim suffixOverrides=",">
+	<if test="id != null">id,</if>
+	<if test="billCode != null">billCode,</if>
+	<if test="productName != null">productName,</if>
+	<if test="productDesc != null">productDesc,</if>
+	<if test="productCount != null">productCount,</if>
+		<if test="productUnit != null">productUnit,</if>
+	<if test="totalPrice != null">totalPrice,</if>
+	<if test="isPayment != null">isPayment,</if>
+	<if test="createdBy != null">createdBy,</if>
+	<if test="creationDate != null">creationDate,</if>
+	<if test="modifyBy != null">modifyBy,</if>
+	<if test="modifyDate != null">modifyDate,</if>
+	<if test="providerId != null">providerId,</if>
+	</trim>
+	)
+	values(
+		<trim suffixOverrides=",">
+	<if test="id != null">#{id},</if>
+	<if test="billCode != null">#{billCode},</if>
+	<if test="productName != null">#{productName},</if>
+	<if test="productDesc != null">#{productDesc},</if>
+	<if test="productCount != null">#{productCount},</if>
+	<if test="productUnit != null">#{productUnit},</if>
+	<if test="totalPrice != null">#{totalPrice},</if>
+	<if test="isPayment != null">#{isPayment},</if>
+	<if test="createdBy != null">#{createdBy},</if>
+	<if test="creationDate != null">#{creationDate},</if>
+	<if test="modifyBy != null">#{modifyBy},</if>
+	<if test="modifyDate != null">#{modifyDate},</if>
+	<if test="providerId != null">#{providerId},</if>
+	</trim>
+	)
+</insert>
+
+<!--  根据ID查看订单详情-->
+<select id="getBillById" resultType="Bill" parameterType="int">
+SELECT b.*,p.`proName`
+	 FROM `smbms_bill` b INNER JOIN `smbms_provider` p ON b.`providerId` = p.`id` WHERE  b.id=#{bid}
+<!-- 	SELECT * FROM `smbms_bill` WHERE `id` =#{id} -->
+</select>
+
+<!-- 修改订单信息 -->
+<update id="updateBillById" parameterType="Bill">
+	UPDATE smbms_bill
+		<trim prefix="set" suffixOverrides="," >
+	   	 		<if test="billCode != null">billCode = #{billCode},</if>
+	   	 		<if test="productName != null">productName = #{productName},</if>
+	   	 		<if test="productDesc != null">productDesc = #{productDesc},</if>
+	   	 		<if test="productUnit != null">productUnit = #{productUnit},</if>
+	   	 		<if test="productCount != null">productCount = #{productCount},</if>
+	   	 		<if test="totalPrice != null">totalPrice = #{totalPrice},</if>
+	   	 		<if test="isPayment != null">isPayment = #{isPayment},</if>
+	   	 		<if test="createdBy != null">createdBy = #{createdBy},</if>
+	   	 		<if test="creationDate != null">creationDate = #{creationDate},</if>
+	   	 		<if test="modifyBy != null">modifyBy = #{modifyBy},</if>
+	   	 		<if test="modifyDate != null">modifyDate = #{modifyDate},</if>
+	   	 		<if test="providerId != null">providerId = #{providerId},</if>
+	   	 	</trim>
+	   	 	where 
+	   	 		id = #{id}
+</update>
+</mapper>

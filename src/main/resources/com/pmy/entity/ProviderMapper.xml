@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+  
+<mapper namespace="com.pmy.dao.ProviderMapping">  
+   <!-- 通过条件分页查询供应商列表 -->
+   <select id="getProviderList" resultType="Provider">
+   		  		SELECT * 
+   		  		FROM `smbms_provider` 
+				<trim prefix="where" prefixOverrides="and | or">
+					<if test="proCode != null and proCode !=''">`proCode`LIKE CONCAT ('%',#{proCode},'%') </if>
+					<if test="proName != null">`proName` LIKE CONCAT ('%',#{proName},'%')</if>
+				</trim>
+				limit #{pageIndex},#{pageSize}
+   </select>
+   
+   <!-- 根据供应商编码或供应商名称查询返回的记录数 -->
+   <select id="getProviderRows" resultType="int">
+   		  		SELECT COUNT(*) 
+   		  		FROM `smbms_provider` 
+				<trim prefix="where" prefixOverrides="and | or">
+					<if test="proCode != null and proCode !=''">`proCode`LIKE CONCAT ('%',#{proCode},'%') </if>
+					<if test="proName != null">`proName` LIKE CONCAT ('%',#{proName},'%')</if>
+				</trim>
+   </select>
+   
+   <!--  增加供应商-->
+   <insert id="addProvider" parameterType="Provider">
+   		INSERT INTO `smbms_provider`
+   		(
+   		`proCode`,
+   		`proName`,
+   		`proContact`,
+   		`proPhone`,
+   		`proAddress`,
+   		`proFax`,
+   		`proDesc`,
+   		`companyLicPicPath`
+   		)
+		VALUES
+		(
+		#{proCode},
+		#{proName},
+		#{proContact},
+		#{proPhone},
+		#{proAddress},
+		#{proFax},
+		#{proDesc},
+		#{companyLicPicPath}
+		)
+   </insert>
+   <!-- 删除供应商 -->
+   <delete id="delProvider"  parameterType="int">
+   		DELETE FROM `smbms_provider` WHERE id = #{id}
+   </delete>
+   
+   <!--  根据供应商id查看供应商-->
+   <select id="getProviderById" parameterType="int"  resultType="Provider">
+   	SELECT * FROM `smbms_provider` WHERE `id` = #{id}
+   </select>
+   
+   <!-- 修改供应商 -->
+   <update id="updateProvider" parameterType="Provider">
+   UPDATE smbms_provider 
+   <trim prefix="set" suffixOverrides=","> 
+   		<if test="proCode != null">proCode=#{proCode},</if>
+   		<if test="proName != null">proName=#{proName},</if>
+   		<if test="proDesc != null">proDesc=#{proDesc},</if>
+   		<if test="proContact != null">proContact=#{proContact},</if>
+   		<if test="proPhone != null">proPhone=#{proPhone},</if>
+   		<if test="proAddress != null">proAddress=#{proAddress},</if>
+   		<if test="proFax != null">proFax=#{proFax},</if>
+   		<if test="createdBy != null">createdBy=#{createdBy},</if>
+   		<if test="creationDate != null">creationDate=#{creationDate},</if>
+   		<if test="modifyDate != null">modifyDate=#{modifyDate},</if>
+   		<if test="modifyBy != null">modifyBy=#{modifyBy},</if>
+   		<if test="companyLicPicPath != null">companyLicPicPath=#{companyLicPicPath},</if>
+   </trim>
+   		where id=#{id}
+   </update>
+</mapper>
